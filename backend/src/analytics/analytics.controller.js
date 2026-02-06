@@ -1,5 +1,6 @@
 import AnalyticsSnapshot from "../models/analyticsSnapshot.model.js";
 import { successResponse } from "../utils/response.js";
+import { validateSubjectParam } from "./analytics.validator.js";
 
 export const getOverview = async (req, res, next) => {
   try {
@@ -15,6 +16,8 @@ export const getOverview = async (req, res, next) => {
 
 export const getSubjectAnalytics = async (req, res, next) => {
   try {
+    validateSubjectParam(req.params.subject);
+
     const data = await AnalyticsSnapshot.find({
       userId: req.user._id,
       subject: req.params.subject,

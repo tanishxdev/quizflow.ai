@@ -1,27 +1,43 @@
+// src/quiz/quiz.validator.js
+
 export const validateQuizInput = (data) => {
-  const { subject, topic, totalQuestions } = data;
+  const { subject, topics, difficultyMode, totalQuestions, timeConfig } = data;
 
+  // subject
   if (!subject || typeof subject !== "string") {
-    return { valid: false, message: "Invalid or missing subject." };
+    throw new Error("Subject is required and must be a string.");
   }
 
-  if (!topic || typeof topic !== "string" || topic.length < 5) {
-    return {
-      valid: false,
-      message:
-        "Invalid or missing topic. Topic should be at least 5 characters long.",
-    };
-  }
-
+  // topics
   if (
-    !totalQuestions ||
-    typeof totalQuestions !== "number" ||
-    totalQuestions <= 0
+    !Array.isArray(topics) ||
+    topics.length === 0 ||
+    !topics.every((t) => typeof t === "string")
   ) {
-    return {
-      valid: false,
-      message:
-        "Invalid or missing totalQuestions. It should be a positive number.",
-    };
+    throw new Error("Topics must be a non-empty array of strings.");
+  }
+
+  // difficultyMode
+  const allowedDifficulties = ["easy", "medium", "hard", "mixed"];
+  if (!difficultyMode || !allowedDifficulties.includes(difficultyMode)) {
+    throw new Error(
+      `difficultyMode must be one of: ${allowedDifficulties.join(", ")}`,
+    );
+  }
+
+  // totalQuestions
+  if (typeof totalQuestions !== "number" || totalQuestions <= 0) {
+    throw new Error("totalQuestions must be a positive number.");
+  }
+
+  // timeConfig
+  if (
+    !timeConfig ||
+    typeof timeConfig !== "object" ||
+    !["per-question", "total"].includes(timeConfig.mode) ||
+    typeof timeConfig.value !== "number" ||
+    timeConfig.value <= 0
+  ) {
+    throw new Error("timeConfig must have valid mode and positive value.");
   }
 };
